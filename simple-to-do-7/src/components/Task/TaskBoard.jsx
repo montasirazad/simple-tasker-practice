@@ -37,21 +37,63 @@ const TaskBoard = () => {
 
   const [tasks, setTasks] = useState(defaultTask);
   const [showModal, setShowModal] = useState(false);
+  const [updatedTask, setUpdatedTask] = useState(null);
 
-  const handleAddTask = (newTask) => {
-    console.log(newTask);
-    setTasks([...tasks, newTask]);
+  const handleAddEditTask = (newTask, isAdd) => {
+    if (isAdd) {
+      setTasks([...tasks, newTask]);
+    } else {
+      setTasks(
+        tasks.map((task) => {
+          if (task.id === newTask.id) {
+            return newTask;
+          }
+          return task;
+        }),
+      );
+    }
+
     setShowModal(false);
   };
+  const handleEditTask = (updated) => {
+    setUpdatedTask(updated);
+    setShowModal(true);
+  };
 
+  const handleFavorite = (taskID) => {
+    const favoriteIndex = tasks.findIndex((task) => task.id === taskID);
+    const newTasks = [...tasks];
+    newTasks[favoriteIndex].isFavorite = !newTasks[favoriteIndex].isFavorite;
+    setTasks(newTasks);
+  };
+  const handleDelete = (taskId) => {
+    const filteredTasks = tasks.filter((task) => task.id != taskId);
+    setTasks(filteredTasks);
+  };
+
+  const handleModalClose = () => {
+    setUpdatedTask(null);
+    setShowModal(false);
+  };
   return (
     <section className="mb-20" id="tasks">
-      {showModal && <AddTaskModal onAddTask={handleAddTask} />}
+      {showModal && (
+        <AddTaskModal
+          onAddTask={handleAddEditTask}
+          updatedTask={updatedTask}
+          onClose={handleModalClose}
+        />
+      )}
       <div className="container">
         <SearchTask />
         <div className="rounded-xl border border-[rgba(206,206,206,0.12)] bg-[#1D212B] px-6 py-8 md:px-9 md:py-16">
           <TaskAction onAddTask={() => setShowModal(true)} />
-          <TaskList tasks={tasks} />
+          <TaskList
+            tasks={tasks}
+            onTaskEdit={handleEditTask}
+            onFav={handleFavorite}
+            onDelete={handleDelete}
+          />
         </div>
       </div>
     </section>

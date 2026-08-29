@@ -1,14 +1,18 @@
 import { useState } from "react";
 
-const AddTaskModal = ({ onAddTask }) => {
-  const [task, setTask] = useState({
-    id: crypto.randomUUID(),
-    title: "",
-    description: "",
-    tags: [],
-    priority: "",
-    isFavorite: false,
-  });
+const AddTaskModal = ({ onAddTask, updatedTask,onClose }) => {
+  const [task, setTask] = useState(
+    updatedTask || {
+      id: crypto.randomUUID(),
+      title: "",
+      description: "",
+      tags: [],
+      priority: "",
+      isFavorite: false,
+    },
+  );
+  // eslint-disable-next-line no-unused-vars
+  const [isAdd, setIsAdd] = useState(Object.is(updatedTask, null));
 
   const handleChange = (e) => {
     const name = e.target.name;
@@ -87,9 +91,16 @@ const AddTaskModal = ({ onAddTask }) => {
           </div>
         </div>
 
-        <div className="mt-16 flex justify-center lg:mt-20">
+        <div className="mt-16 flex justify-between lg:mt-20">
           <button
-            onClick={() => onAddTask(task)}
+            onClick={() => onClose(task, isAdd)}
+            type="button"
+            className="rounded bg-red-600 px-4 py-2 text-white transition-all hover:opacity-80"
+          >
+            Close
+          </button>
+          <button
+            onClick={() => onAddTask(task, isAdd)}
             type="button"
             className="rounded bg-blue-600 px-4 py-2 text-white transition-all hover:opacity-80"
           >
